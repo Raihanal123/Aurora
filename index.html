@@ -1,761 +1,820 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AURORA Interior — Kirim Lokasi</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-<style>
-  :root{
-    --orange: #FF5A1F;
-    --orange-deep: #E44A12;
-    --orange-soft: #FFE7DA;
-    --white: #FFFFFF;
-    --ink: #201A17;
-    --ink-soft: #8A7F79;
-    --line: #F0E3DC;
-    --radius: 18px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>AURORA Design Interior and Build — Kirim Lokasi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style>
+    :root {
+      --orange: #FF5A1F;
+      --orange-deep: #E44A12;
+      --orange-soft: #FFE7DA;
+      --white: #FFFFFF;
+      --ink: #201A17;
+      --ink-soft: #8A7F79;
+      --line: #F0E3DC;
+      --radius: 18px;
+    }
 
-  *{ box-sizing: border-box; margin:0; padding:0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  html,body{
-    height:100%;
-    width:100%;
-    overflow:hidden;
-  }
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
 
-  body{
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--white);
-    color: var(--ink);
-    display:flex;
-    flex-direction:column;
-  }
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+    }
 
-  @font-face{
-    font-family:'Manrope';
-    src:local('Manrope');
-  }
+    @font-face {
+      font-family: 'Manrope';
+      src: local('Manrope');
+    }
 
-  /* ---------- HEADER ---------- */
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding: 16px 22px;
-    background: var(--white);
-    z-index: 500;
-    position: relative;
-    border-bottom: 1px solid var(--line);
-    flex-shrink: 0;
-  }
+    /* ---------- HEADER ---------- */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      background: var(--white);
+      z-index: 500;
+      position: relative;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
 
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  .brand img{
-    height: 40px;
-    width:auto;
-    display:block;
-  }
+    .brand img {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
 
-  .brand-text{
-    display:flex;
-    flex-direction:column;
-    line-height:1.1;
-  }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
 
-  .brand-text .name{
-    font-size:16px;
-    font-weight:800;
-    letter-spacing:0.5px;
-    color: var(--ink);
-  }
+    .brand-text .name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--ink);
+    }
 
-  .brand-text .tag{
-    font-size:10.5px;
-    font-weight:600;
-    letter-spacing:1.2px;
-    text-transform:uppercase;
-    color: var(--ink-soft);
-  }
+    .brand-text .tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
 
-  .status-pill{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    font-size:11.5px;
-    font-weight:700;
-    letter-spacing:0.3px;
-    padding:7px 12px;
-    border-radius:100px;
-    background: var(--orange-soft);
-    color: var(--orange-deep);
-    white-space:nowrap;
-  }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      padding: 7px 12px;
+      border-radius: 100px;
+      background: var(--orange-soft);
+      color: var(--orange-deep);
+      white-space: nowrap;
+    }
 
-  .status-dot{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background: var(--orange);
-    flex-shrink:0;
-  }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
 
-  .status-dot.locating{
-    animation: pulse 1.1s ease-in-out infinite;
-  }
+    .status-dot.locating {
+      animation: pulse 1.1s ease-in-out infinite;
+    }
 
-  @keyframes pulse{
-    0%,100%{ opacity:1; transform:scale(1); }
-    50%{ opacity:0.35; transform:scale(0.7); }
-  }
+    @keyframes pulse {
 
-  /* ---------- MAP ---------- */
-  #map-wrap{
-    position:relative;
-    flex:1;
-    min-height:0;
-  }
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
 
-  #map{
-    width:100%;
-    height:100%;
-    background: var(--orange-soft);
-  }
+      50% {
+        opacity: 0.35;
+        transform: scale(0.7);
+      }
+    }
 
-  .leaflet-container{
-    font-family: inherit;
-  }
+    /* ---------- MAP ---------- */
+    #map-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+    }
 
-  #map-message{
-    position:absolute;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:14px;
-    background: var(--orange-soft);
-    z-index: 400;
-    text-align:center;
-    padding: 0 30px;
-  }
+    #map {
+      width: 100%;
+      height: 100%;
+      background: var(--orange-soft);
+    }
 
-  #map-message.hidden{ display:none; }
+    .leaflet-container {
+      font-family: inherit;
+    }
 
-  .pin-anim{
-    width:56px;
-    height:56px;
-    border-radius:50%;
-    background: var(--white);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow: 0 8px 24px rgba(255,90,31,0.25);
-  }
+    #map-message {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: var(--orange-soft);
+      z-index: 400;
+      text-align: center;
+      padding: 0 30px;
+    }
 
-  .pin-anim svg{ width:26px; height:26px; }
+    #map-message.hidden {
+      display: none;
+    }
 
-  #map-message h2{
-    font-size:16px;
-    font-weight:800;
-    color: var(--ink);
-  }
+    .pin-anim {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(255, 90, 31, 0.25);
+    }
 
-  #map-message p{
-    font-size:13px;
-    color: var(--ink-soft);
-    max-width:280px;
-    line-height:1.5;
-  }
+    .pin-anim svg {
+      width: 26px;
+      height: 26px;
+    }
 
-  #retry-btn{
-    margin-top:6px;
-    background: var(--ink);
-    color: var(--white);
-    border:none;
-    padding:10px 20px;
-    border-radius:100px;
-    font-size:13px;
-    font-weight:700;
-    cursor:pointer;
-    display:none;
-  }
+    #map-message h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+    }
 
-  #retry-btn.show{ display:inline-block; }
+    #map-message p {
+      font-size: 13px;
+      color: var(--ink-soft);
+      max-width: 280px;
+      line-height: 1.5;
+    }
 
-  /* center crosshair pin over map */
-  .center-pin{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform: translate(-50%,-100%);
-    z-index: 450;
-    pointer-events:none;
-    display:none;
-    flex-direction:column;
-    align-items:center;
-  }
+    #retry-btn {
+      margin-top: 6px;
+      background: var(--ink);
+      color: var(--white);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
 
-  .center-pin.show{ display:flex; }
+    #retry-btn.show {
+      display: inline-block;
+    }
 
-  .center-pin .dot{
-    width:22px;
-    height:22px;
-    border-radius:50% 50% 50% 0;
-    background: var(--orange);
-    transform: rotate(-45deg);
-    box-shadow: 0 4px 10px rgba(228,74,18,0.4);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+    /* center crosshair pin over map */
+    .center-pin {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      z-index: 450;
+      pointer-events: none;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  .center-pin .dot::after{
-    content:'';
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background: var(--white);
-    transform: rotate(45deg);
-  }
+    .center-pin.show {
+      display: flex;
+    }
 
-  .center-pin .shadow{
-    width:16px;
-    height:5px;
-    border-radius:50%;
-    background: rgba(32,26,23,0.25);
-    margin-top:2px;
-  }
+    .center-pin .dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50% 50% 50% 0;
+      background: var(--orange);
+      transform: rotate(-45deg);
+      box-shadow: 0 4px 10px rgba(228, 74, 18, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  /* ---------- FOOTER / ACTION SHEET ---------- */
-  footer{
-    background: var(--white);
-    padding: 18px 20px calc(18px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--line);
-    z-index: 500;
-    flex-shrink:0;
-  }
+    .center-pin .dot::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--white);
+      transform: rotate(45deg);
+    }
 
-  .addr-box{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    margin-bottom:14px;
-    min-height: 34px;
-  }
+    .center-pin .shadow {
+      width: 16px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(32, 26, 23, 0.25);
+      margin-top: 2px;
+    }
 
-  .addr-icon{
-    width:30px;
-    height:30px;
-    border-radius:9px;
-    background: var(--orange-soft);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
-  }
+    /* ---------- FOOTER / ACTION SHEET ---------- */
+    footer {
+      background: var(--white);
+      padding: 18px 20px calc(18px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      z-index: 500;
+      flex-shrink: 0;
+    }
 
-  .addr-icon svg{ width:15px; height:15px; }
+    .addr-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      min-height: 34px;
+    }
 
-  #addr-text{
-    font-size:12.5px;
-    line-height:1.45;
-    color: var(--ink-soft);
-    font-weight:600;
-    padding-top:5px;
-  }
+    .addr-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--orange-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-  #addr-text.ready{ color: var(--ink); }
+    .addr-icon svg {
+      width: 15px;
+      height: 15px;
+    }
 
-  .photo-section{
-    margin-bottom: 14px;
-  }
+    #addr-text {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      font-weight: 600;
+      padding-top: 5px;
+    }
 
-  .photo-toggle{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    background: var(--white);
-    color: var(--orange-deep);
-    border: 1.5px dashed #FFC5A8;
-    padding: 12px;
-    border-radius: 14px;
-    font-size:13px;
-    font-weight:700;
-    cursor:pointer;
-    transition: background 0.15s ease;
-  }
+    #addr-text.ready {
+      color: var(--ink);
+    }
 
-  .photo-toggle:active{ background: var(--orange-soft); }
+    .photo-section {
+      margin-bottom: 14px;
+    }
 
-  .photo-toggle svg{ width:16px; height:16px; }
+    .photo-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--white);
+      color: var(--orange-deep);
+      border: 1.5px dashed #FFC5A8;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
 
-  .photo-preview{
-    display:none;
-    align-items:center;
-    gap:10px;
-    background: var(--orange-soft);
-    border-radius: 14px;
-    padding: 8px;
-    margin-top: 8px;
-  }
+    .photo-toggle:active {
+      background: var(--orange-soft);
+    }
 
-  .photo-preview.show{ display:flex; }
+    .photo-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
 
-  .photo-preview img{
-    width:52px;
-    height:52px;
-    object-fit:cover;
-    border-radius:10px;
-    flex-shrink:0;
-  }
+    .photo-preview {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: var(--orange-soft);
+      border-radius: 14px;
+      padding: 8px;
+      margin-top: 8px;
+    }
 
-  .photo-preview .photo-info{
-    flex:1;
-    min-width:0;
-  }
+    .photo-preview.show {
+      display: flex;
+    }
 
-  .photo-preview .photo-info .label{
-    font-size:12px;
-    font-weight:800;
-    color: var(--ink);
-  }
+    .photo-preview img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
 
-  .photo-preview .photo-info .sub{
-    font-size:10.5px;
-    color: var(--ink-soft);
-    font-weight:600;
-  }
+    .photo-preview .photo-info {
+      flex: 1;
+      min-width: 0;
+    }
 
-  .photo-remove{
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    background: var(--white);
-    border:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    flex-shrink:0;
-  }
+    .photo-preview .photo-info .label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink);
+    }
 
-  .photo-remove svg{ width:13px; height:13px; }
+    .photo-preview .photo-info .sub {
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
 
-  #photoInput{ display:none; }
+    .photo-remove {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--white);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
 
-  .send-btn{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:9px;
-    background: var(--orange);
-    color: var(--white);
-    border:none;
-    padding:16px;
-    border-radius: 100px;
-    font-size:15px;
-    font-weight:800;
-    letter-spacing:0.2px;
-    cursor:pointer;
-    transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
-    box-shadow: 0 10px 24px rgba(255,90,31,0.3);
-  }
+    .photo-remove svg {
+      width: 13px;
+      height: 13px;
+    }
 
-  .send-btn:active{ transform: scale(0.97); }
+    #photoInput {
+      display: none;
+    }
 
-  .send-btn:disabled{
-    background: #E5DFDC;
-    color: var(--ink-soft);
-    box-shadow:none;
-    cursor:not-allowed;
-  }
+    .send-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      padding: 16px;
+      border-radius: 100px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 10px 24px rgba(255, 90, 31, 0.3);
+    }
 
-  .send-btn svg{ width:18px; height:18px; }
+    .send-btn:active {
+      transform: scale(0.97);
+    }
 
-  .disclaimer{
-    text-align:center;
-    font-size:10.5px;
-    color: var(--ink-soft);
-    margin-top:11px;
-    font-weight:600;
-    letter-spacing:0.2px;
-  }
+    .send-btn:disabled {
+      background: #E5DFDC;
+      color: var(--ink-soft);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
 
-  /* Toast */
-  #toast{
-    position:fixed;
-    left:50%;
-    bottom:110px;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--ink);
-    color: var(--white);
-    padding: 11px 18px;
-    border-radius: 100px;
-    font-size:12.5px;
-    font-weight:700;
-    opacity:0;
-    transition: all 0.25s ease;
-    z-index: 900;
-    pointer-events:none;
-    white-space:nowrap;
-  }
+    .send-btn svg {
+      width: 18px;
+      height: 18px;
+    }
 
-  #toast.show{
-    opacity:1;
-    transform: translateX(-50%) translateY(0);
-  }
-</style>
+    .disclaimer {
+      text-align: center;
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      margin-top: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 110px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: var(--white);
+      padding: 11px 18px;
+      border-radius: 100px;
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 900;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="brand">
-    <img src="img/Logo.png"
+  <header>
+    <div class="brand">
+      <img src="img/logo.png">
       <div class="brand-text">
-    </div>
-  </div>
-  <div class="status-pill">
-    <span class="status-dot locating" id="statusDot"></span>
-    <span id="statusText">Mencari lokasi…</span>
-  </div>
-</header>
-
-<div id="map-wrap">
-  <div id="map"></div>
-
-  <div class="center-pin" id="centerPin">
-    <div class="dot"></div>
-    <div class="shadow"></div>
-  </div>
-
-  <div id="map-message">
-    <div class="pin-anim">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>
-    </div>
-    <h2 id="msgTitle">Mengambil lokasi kamu…</h2>
-    <p id="msgBody">Izinkan akses lokasi di browser agar peta bisa menampilkan posisi kamu secara otomatis.</p>
-    <button id="retry-btn">Coba Lagi</button>
-  </div>
-</div>
-
-<footer>
-  <div class="addr-box">
-    <div class="addr-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#E44A12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>
-    </div>
-    <div id="addr-text">Menunggu lokasi ditemukan…</div>
-  </div>
-
-  <div class="photo-section">
-    <input type="file" id="photoInput" accept="image/*" capture="environment" />
-    <button type="button" class="photo-toggle" id="photoToggle">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
-      </svg>
-      Foto Rumah (Opsional)
-    </button>
-    <div class="photo-preview" id="photoPreview">
-      <img id="photoThumb" src="" alt="Foto rumah" />
-      <div class="photo-info">
-        <div class="label">Foto ditambahkan</div>
-        <div class="sub" id="photoMeta">Akan dikirim bersama lokasi</div>
+        <span class="name">AURORA</span>
+        <span class="tag">Design Interior and Build</span>
       </div>
-      <button type="button" class="photo-remove" id="photoRemove">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#201A17" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot locating" id="statusDot"></span>
+      <span id="statusText">Mencari lokasi…</span>
+    </div>
+  </header>
+
+  <div id="map-wrap">
+    <div id="map"></div>
+
+    <div class="center-pin" id="centerPin">
+      <div class="dot"></div>
+      <div class="shadow"></div>
+    </div>
+
+    <div id="map-message">
+      <div class="pin-anim">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
         </svg>
-      </button>
+      </div>
+      <h2 id="msgTitle">Mengambil lokasi kamu…</h2>
+      <p id="msgBody">Izinkan akses lokasi di browser agar peta bisa menampilkan posisi kamu secara otomatis.</p>
+      <button id="retry-btn">Coba Lagi</button>
     </div>
   </div>
 
-  <button class="send-btn" id="sendBtn" disabled>
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.014 2C6.5 2 2.02 6.477 2.02 11.99c0 1.995.585 3.855 1.593 5.421L2 22l4.696-1.593a9.945 9.945 0 0 0 5.318 1.53c5.514 0 9.994-4.477 9.994-9.99C22.008 6.477 17.528 2 12.014 2zm0 18.03a8.02 8.02 0 0 1-4.412-1.32l-.316-.192-3.293 1.117 1.128-3.212-.207-.33A8.05 8.05 0 1 1 20.02 12.04a8.058 8.058 0 0 1-8.006 7.99z"/></svg>
-    <span id="sendBtnLabel">Kirim Lokasi via WhatsApp</span>
-  </button>
+  <footer>
+    <div class="addr-box">
+      <div class="addr-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#E44A12" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+      </div>
+      <div id="addr-text">Menunggu lokasi ditemukan…</div>
+    </div>
 
-  <div class="disclaimer">Lokasi hanya dikirim saat kamu menekan tombol ini</div>
-</footer>
+    <div class="photo-section">
+      <input type="file" id="photoInput" accept="image/*" capture="environment" />
+      <button type="button" class="photo-toggle" id="photoToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        Foto Rumah (Opsional)
+      </button>
+      <div class="photo-preview" id="photoPreview">
+        <img id="photoThumb" src="" alt="Foto rumah" />
+        <div class="photo-info">
+          <div class="label">Foto ditambahkan</div>
+          <div class="sub" id="photoMeta">Akan dikirim bersama lokasi</div>
+        </div>
+        <button type="button" class="photo-remove" id="photoRemove">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#201A17" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
 
-<div id="toast"></div>
+    <button class="send-btn" id="sendBtn" disabled>
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+        <path
+          d="M12.014 2C6.5 2 2.02 6.477 2.02 11.99c0 1.995.585 3.855 1.593 5.421L2 22l4.696-1.593a9.945 9.945 0 0 0 5.318 1.53c5.514 0 9.994-4.477 9.994-9.99C22.008 6.477 17.528 2 12.014 2zm0 18.03a8.02 8.02 0 0 1-4.412-1.32l-.316-.192-3.293 1.117 1.128-3.212-.207-.33A8.05 8.05 0 1 1 20.02 12.04a8.058 8.058 0 0 1-8.006 7.99z" />
+      </svg>
+      <span id="sendBtnLabel">Kirim Lokasi via WhatsApp</span>
+    </button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>
-  const WA_NUMBER = "62887437173425";
-  const BUSINESS_NAME = "AURORA";
+    <div class="disclaimer">Lokasi hanya dikirim saat kamu menekan tombol ini</div>
+  </footer>
 
-  let map, marker, currentLat = null, currentLng = null, currentAddress = "";
-  const statusDot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-  const mapMessage = document.getElementById('map-message');
-  const msgTitle = document.getElementById('msgTitle');
-  const msgBody = document.getElementById('msgBody');
-  const retryBtn = document.getElementById('retry-btn');
-  const sendBtn = document.getElementById('sendBtn');
-  const sendBtnLabel = document.getElementById('sendBtnLabel');
-  const addrText = document.getElementById('addr-text');
-  const centerPin = document.getElementById('centerPin');
-  const toast = document.getElementById('toast');
+  <div id="toast"></div>
 
-  function showToast(msg, duration){
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(()=> toast.classList.remove('show'), duration || 2400);
-  }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    const WA_NUMBER = "6285273229500";
+    const BUSINESS_NAME = "AURORA Design Interior and Build";
 
-  function initMap(lat, lng){
-    map = L.map('map', { zoomControl:false, attributionControl:false }).setView([lat, lng], 17);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    }).addTo(map);
-    L.control.zoom({ position:'bottomright' }).addTo(map);
+    let map, marker, currentLat = null, currentLng = null, currentAddress = "";
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const mapMessage = document.getElementById('map-message');
+    const msgTitle = document.getElementById('msgTitle');
+    const msgBody = document.getElementById('msgBody');
+    const retryBtn = document.getElementById('retry-btn');
+    const sendBtn = document.getElementById('sendBtn');
+    const sendBtnLabel = document.getElementById('sendBtnLabel');
+    const addrText = document.getElementById('addr-text');
+    const centerPin = document.getElementById('centerPin');
+    const toast = document.getElementById('toast');
 
-    const orangeIcon = L.divIcon({
-      className: '',
-      html: '<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#FF5A1F;transform:rotate(-45deg);box-shadow:0 4px 10px rgba(228,74,18,0.45);border:3px solid white;"></div>',
-      iconSize: [26,26],
-      iconAnchor: [13,26]
-    });
-
-    marker = L.marker([lat, lng], { draggable:true, icon: orangeIcon }).addTo(map);
-
-    marker.on('dragend', function(e){
-      const pos = e.target.getLatLng();
-      updateLocation(pos.lat, pos.lng);
-    });
-
-    map.on('moveend', function(){
-      // keep marker in sync if user pans (marker stays fixed; this is optional UX)
-    });
-  }
-
-  function reverseGeocode(lat, lng){
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
-      headers: { 'Accept-Language': 'id' }
-    })
-    .then(res => res.json())
-    .then(data => {
-      currentAddress = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      addrText.textContent = currentAddress;
-      addrText.classList.add('ready');
-    })
-    .catch(() => {
-      currentAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      addrText.textContent = currentAddress;
-      addrText.classList.add('ready');
-    });
-  }
-
-  function updateLocation(lat, lng){
-    currentLat = lat;
-    currentLng = lng;
-    if(marker) marker.setLatLng([lat, lng]);
-    addrText.textContent = "Memuat alamat…";
-    addrText.classList.remove('ready');
-    reverseGeocode(lat, lng);
-    sendBtn.disabled = false;
-    statusDot.classList.remove('locating');
-    statusText.textContent = "Lokasi ditemukan";
-  }
-
-  function locationFound(position){
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
-    mapMessage.classList.add('hidden');
-    initMap(lat, lng);
-    updateLocation(lat, lng);
-  }
-
-  function locationError(err){
-    statusDot.classList.remove('locating');
-    statusText.textContent = "Lokasi tidak aktif";
-    msgTitle.textContent = "Tidak bisa mengambil lokasi";
-    if(err && err.code === 1){
-      msgBody.textContent = "Akses lokasi ditolak. Aktifkan izin lokasi untuk browser ini di pengaturan, lalu coba lagi.";
-    } else {
-      msgBody.textContent = "Terjadi kendala saat mengambil lokasi. Pastikan GPS aktif, lalu coba lagi.";
+    function showToast(msg, duration) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), duration || 2400);
     }
-    retryBtn.classList.add('show');
-  }
 
-  function getLocation(){
-    mapMessage.classList.remove('hidden');
-    msgTitle.textContent = "Mengambil lokasi kamu…";
-    msgBody.textContent = "Izinkan akses lokasi di browser agar peta bisa menampilkan posisi kamu secara otomatis.";
-    retryBtn.classList.remove('show');
-    statusDot.classList.add('locating');
-    statusText.textContent = "Mencari lokasi…";
+    function initMap(lat, lng) {
+      map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat, lng], 17);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(map);
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    if(!navigator.geolocation){
-      locationError({ code: 2 });
-      return;
+      const orangeIcon = L.divIcon({
+        className: '',
+        html: '<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#FF5A1F;transform:rotate(-45deg);box-shadow:0 4px 10px rgba(228,74,18,0.45);border:3px solid white;"></div>',
+        iconSize: [26, 26],
+        iconAnchor: [13, 26]
+      });
+
+      marker = L.marker([lat, lng], { draggable: true, icon: orangeIcon }).addTo(map);
+
+      marker.on('dragend', function (e) {
+        const pos = e.target.getLatLng();
+        updateLocation(pos.lat, pos.lng);
+      });
+
+      map.on('moveend', function () {
+        // keep marker in sync if user pans (marker stays fixed; this is optional UX)
+      });
     }
-    navigator.geolocation.getCurrentPosition(locationFound, locationError, {
-      enableHighAccuracy: true,
-      timeout: 12000,
-      maximumAge: 0
+
+    function reverseGeocode(lat, lng) {
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+        headers: { 'Accept-Language': 'id' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          currentAddress = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          addrText.textContent = currentAddress;
+          addrText.classList.add('ready');
+        })
+        .catch(() => {
+          currentAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          addrText.textContent = currentAddress;
+          addrText.classList.add('ready');
+        });
+    }
+
+    function updateLocation(lat, lng) {
+      currentLat = lat;
+      currentLng = lng;
+      if (marker) marker.setLatLng([lat, lng]);
+      addrText.textContent = "Memuat alamat…";
+      addrText.classList.remove('ready');
+      reverseGeocode(lat, lng);
+      sendBtn.disabled = false;
+      statusDot.classList.remove('locating');
+      statusText.textContent = "Lokasi ditemukan";
+    }
+
+    function locationFound(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      mapMessage.classList.add('hidden');
+      initMap(lat, lng);
+      updateLocation(lat, lng);
+    }
+
+    function locationError(err) {
+      statusDot.classList.remove('locating');
+      statusText.textContent = "Lokasi tidak aktif";
+      msgTitle.textContent = "Tidak bisa mengambil lokasi";
+      if (err && err.code === 1) {
+        msgBody.textContent = "Akses lokasi ditolak. Aktifkan izin lokasi untuk browser ini di pengaturan, lalu coba lagi.";
+      } else {
+        msgBody.textContent = "Terjadi kendala saat mengambil lokasi. Pastikan GPS aktif, lalu coba lagi.";
+      }
+      retryBtn.classList.add('show');
+    }
+
+    function getLocation() {
+      mapMessage.classList.remove('hidden');
+      msgTitle.textContent = "Mengambil lokasi kamu…";
+      msgBody.textContent = "Izinkan akses lokasi di browser agar peta bisa menampilkan posisi kamu secara otomatis.";
+      retryBtn.classList.remove('show');
+      statusDot.classList.add('locating');
+      statusText.textContent = "Mencari lokasi…";
+
+      if (!navigator.geolocation) {
+        locationError({ code: 2 });
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(locationFound, locationError, {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 0
+      });
+    }
+
+    retryBtn.addEventListener('click', getLocation);
+
+    // ---------- Optional photo capture ----------
+    const photoInput = document.getElementById('photoInput');
+    const photoToggle = document.getElementById('photoToggle');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoThumb = document.getElementById('photoThumb');
+    const photoMeta = document.getElementById('photoMeta');
+    const photoRemove = document.getElementById('photoRemove');
+    let photoFile = null;
+
+    photoToggle.addEventListener('click', () => photoInput.click());
+
+    photoInput.addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      photoFile = file;
+      const url = URL.createObjectURL(file);
+      photoThumb.src = url;
+      const sizeKb = Math.round(file.size / 1024);
+      photoMeta.textContent = `${sizeKb} KB — akan diunggah otomatis saat kirim`;
+      photoPreview.classList.add('show');
+      photoToggle.style.display = 'none';
     });
-  }
 
-  retryBtn.addEventListener('click', getLocation);
+    photoRemove.addEventListener('click', function () {
+      photoFile = null;
+      photoInput.value = '';
+      photoPreview.classList.remove('show');
+      photoToggle.style.display = 'flex';
+    });
 
-  // ---------- Optional photo capture ----------
-  const photoInput = document.getElementById('photoInput');
-  const photoToggle = document.getElementById('photoToggle');
-  const photoPreview = document.getElementById('photoPreview');
-  const photoThumb = document.getElementById('photoThumb');
-  const photoMeta = document.getElementById('photoMeta');
-  const photoRemove = document.getElementById('photoRemove');
-  let photoFile = null;
-
-  photoToggle.addEventListener('click', () => photoInput.click());
-
-  photoInput.addEventListener('change', function(e){
-    const file = e.target.files[0];
-    if(!file) return;
-    photoFile = file;
-    const url = URL.createObjectURL(file);
-    photoThumb.src = url;
-    const sizeKb = Math.round(file.size / 1024);
-    photoMeta.textContent = `${sizeKb} KB — akan diunggah otomatis saat kirim`;
-    photoPreview.classList.add('show');
-    photoToggle.style.display = 'none';
-  });
-
-  photoRemove.addEventListener('click', function(){
-    photoFile = null;
-    photoInput.value = '';
-    photoPreview.classList.remove('show');
-    photoToggle.style.display = 'flex';
-  });
-
-  function buildMessage(photoUrl){
-    const mapsLink = `https://www.google.com/maps?q=${currentLat},${currentLng}`;
-    let msg = `Halo ${BUSINESS_NAME}, saya ingin membagikan lokasi saya:
+    function buildMessage(photoUrl) {
+      const mapsLink = `https://www.google.com/maps?q=${currentLat},${currentLng}`;
+      let msg = `Halo ${BUSINESS_NAME}, saya ingin membagikan lokasi saya:
 
 ${currentAddress}
 
 Titik lokasi (Google Maps):
 ${mapsLink}`;
-    if(photoUrl){
-      msg += `
+      if (photoUrl) {
+        msg += `
 
 Foto rumah:
 ${photoUrl}`;
-    }
-    return msg;
-  }
-
-  function openWhatsAppText(message){
-    const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.location.href = waUrl;
-  }
-
-  function fileToBase64(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function compressImage(file, maxDimension, quality){
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        let { width, height } = img;
-        if(width > height && width > maxDimension){
-          height = Math.round(height * (maxDimension / width));
-          width = maxDimension;
-        } else if(height > maxDimension){
-          width = Math.round(width * (maxDimension / height));
-          height = maxDimension;
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob((blob) => {
-          if(!blob){ reject(new Error('Gagal memproses foto')); return; }
-          resolve(new File([blob], 'foto-rumah.jpg', { type: 'image/jpeg' }));
-        }, 'image/jpeg', quality);
-      };
-      img.onerror = () => reject(new Error('Gagal memuat foto'));
-      img.src = objectUrl;
-    });
-  }
-
-  async function uploadPhoto(file){
-    const compressed = await compressImage(file, 1600, 0.72);
-    const base64 = await fileToBase64(compressed);
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        imageBase64: base64,
-        filename: 'foto-rumah.jpg',
-        mimeType: 'image/jpeg'
-      })
-    });
-    let data;
-    try{ data = await res.json(); } catch(e){ data = {}; }
-    if(!res.ok || !data.url){
-      throw new Error(data.error || `Upload gagal (kode ${res.status})`);
-    }
-    return data.url;
-  }
-
-  sendBtn.addEventListener('click', async function(){
-    if(currentLat === null || currentLng === null) return;
-    sendBtn.disabled = true;
-
-    if(photoFile){
-      sendBtnLabel.textContent = "Mengunggah foto…";
-      try{
-        const photoUrl = await uploadPhoto(photoFile);
-        const message = buildMessage(photoUrl);
-        sendBtnLabel.textContent = "Membuka WhatsApp…";
-        openWhatsAppText(message);
-        showToast("Membuka WhatsApp…");
-      } catch(err){
-        showToast(`Gagal: ${err.message || 'unggah foto bermasalah'}`, 4500);
-        openWhatsAppText(buildMessage());
       }
-    } else {
-      sendBtnLabel.textContent = "Membuka WhatsApp…";
-      openWhatsAppText(buildMessage());
-      showToast("Membuka WhatsApp…");
+      return msg;
     }
 
-    setTimeout(() => {
-      sendBtn.disabled = false;
-      sendBtnLabel.textContent = "Kirim Lokasi via WhatsApp";
-    }, 2500);
-  });
+    function openWhatsAppText(message) {
+      const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
+      window.location.href = waUrl;
+    }
 
-  window.addEventListener('load', getLocation);
-</script>
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function compressImage(file, maxDimension, quality) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(objectUrl);
+          let { width, height } = img;
+          if (width > height && width > maxDimension) {
+            height = Math.round(height * (maxDimension / width));
+            width = maxDimension;
+          } else if (height > maxDimension) {
+            width = Math.round(width * (maxDimension / height));
+            height = maxDimension;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (!blob) { reject(new Error('Gagal memproses foto')); return; }
+            resolve(new File([blob], 'foto-rumah.jpg', { type: 'image/jpeg' }));
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = () => reject(new Error('Gagal memuat foto'));
+        img.src = objectUrl;
+      });
+    }
+
+    async function uploadPhoto(file) {
+      const compressed = await compressImage(file, 1600, 0.72);
+      const base64 = await fileToBase64(compressed);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageBase64: base64,
+          filename: 'foto-rumah.jpg',
+          mimeType: 'image/jpeg'
+        })
+      });
+      let data;
+      try { data = await res.json(); } catch (e) { data = {}; }
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || `Upload gagal (kode ${res.status})`);
+      }
+      return data.url;
+    }
+
+    sendBtn.addEventListener('click', async function () {
+      if (currentLat === null || currentLng === null) return;
+      sendBtn.disabled = true;
+
+      if (photoFile) {
+        sendBtnLabel.textContent = "Mengunggah foto…";
+        try {
+          const photoUrl = await uploadPhoto(photoFile);
+          const message = buildMessage(photoUrl);
+          sendBtnLabel.textContent = "Membuka WhatsApp…";
+          openWhatsAppText(message);
+          showToast("Membuka WhatsApp…");
+        } catch (err) {
+          showToast(`Gagal: ${err.message || 'unggah foto bermasalah'}`, 4500);
+          openWhatsAppText(buildMessage());
+        }
+      } else {
+        sendBtnLabel.textContent = "Membuka WhatsApp…";
+        openWhatsAppText(buildMessage());
+        showToast("Membuka WhatsApp…");
+      }
+
+      setTimeout(() => {
+        sendBtn.disabled = false;
+        sendBtnLabel.textContent = "Kirim Lokasi via WhatsApp";
+      }, 2500);
+    });
+
+    window.addEventListener('load', getLocation);
+  </script>
 
 </body>
+
 </html>
